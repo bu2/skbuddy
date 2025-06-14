@@ -7,9 +7,10 @@ server.
 
 ## Running the server
 
-Install the dependencies (`fastmcp` and `uvicorn`) and run:
+Install the dependencies listed in `requirements.txt` and run:
 
 ```bash
+pip install -r requirements.txt
 python mcp_server.py
 ```
 
