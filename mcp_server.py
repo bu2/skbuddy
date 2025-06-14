@@ -1,8 +1,32 @@
 """Minimal Model Context Protocol server using FastMCP."""
 
 from fastmcp import FastMCP
+import pandas as pd
+from pydantic import BaseModel
+import uuid
 
 app = FastMCP(title="SK Buddy MCP Server")
+app.state.dataframes = {}
+
+
+class LoadCSVRequest(BaseModel):
+    """Request model for the load_csv tool."""
+
+    path: str
+
+
+@app.post("/load_csv")
+async def load_csv(request: LoadCSVRequest) -> dict[str, list[str] | str]:
+    """Load a CSV file and store the dataframe in memory under a unique ID."""
+    df = pd.read_csv(request.path)
+    # Generate an ID and store the dataframe in the application state
+    df_id = uuid.uuid4().hex
+    app.state.dataframes[df_id] = df
+    return {
+        "id": df_id,
+        "rows": df.shape[0],
+        "columns": df.columns.tolist(),
+    }
 
 
 @app.get("/handshake")
